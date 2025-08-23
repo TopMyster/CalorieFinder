@@ -1,5 +1,5 @@
 async function submition() {
-    let fileInput = document.getElementById('userimage');
+  let fileInput = document.getElementById('userimage');
   let file = fileInput.files[0];
 
   if (!file) {
@@ -9,8 +9,8 @@ async function submition() {
 
   let reader = new FileReader();
   reader.onload = async function(e) {
-    let base64Image = e.target.result;
-  console.log("Sending transcript:", transcript)
+  let base64Image = e.target.result;
+  console.log("Sending transcript:", base64Image)
 
   try {
     const response = await fetch("/api/chat", { 
