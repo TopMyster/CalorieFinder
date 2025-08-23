@@ -34,6 +34,7 @@ async function submition() {
         data.choices[0].message?.content ||
         data.choices[0].text?.content ||
         "Please ask a work related question."
+        console.log(reply)
     } else {
       console.error("Unexpected response format:", data)
     }
