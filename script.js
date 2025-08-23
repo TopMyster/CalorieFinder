@@ -1,5 +1,15 @@
 async function submition() {
-  let transcript = document.getElementById('userimage').value
+    let fileInput = document.getElementById('userimage');
+  let file = fileInput.files[0];
+
+  if (!file) {
+    console.error("No file selected!");
+    return;
+  }
+
+  let reader = new FileReader();
+  reader.onload = async function(e) {
+    let base64Image = e.target.result;
   console.log("Sending transcript:", transcript)
 
   try {
@@ -17,7 +27,7 @@ async function submition() {
           },
           {
             role: "user",
-            content: transcript
+            content: base64Image
           }
         ],
         temperature: 1,
@@ -41,4 +51,7 @@ async function submition() {
   } catch (err) {
     console.error("Error during fetch:", err)
   }
+}
+
+reader.readAsDataURL(file); 
 }
