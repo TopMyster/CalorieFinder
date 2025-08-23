@@ -23,7 +23,7 @@ async function submition() {
         messages: [
           {
             role: "user",
-            content: `Look at the image ${transcript} and give an estimate of how many calories it has.`,
+            content: `Look at the image ${base64Image} and give an estimate of how many calories it has.`,
           },
           {
             role: "user",
