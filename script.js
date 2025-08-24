@@ -9,49 +9,65 @@ async function submition() {
 
   let reader = new FileReader();
   reader.onload = async function(e) {
-  let base64Image = e.target.result;
-  console.log("Sending transcript:", base64Image)
+    let base64Image = e.target.result;
+    console.log("Sending image:", base64Image);
 
-  try {
-    const response = await fetch("/api/chat", { 
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-oss-20b",
-        messages: [
-          {
-            role: "user",
-            content: `Look at the image ${base64Image} and give an estimate of how many calories it has.`,
-          },
-          {
-            role: "user",
-            content: base64Image
-          }
-        ],
-        temperature: 1,
-        max_tokens: 900,
-        top_p: 1,
-        stream: true
-      }),
-    });
+    try {
+      const response = await fetch("/api/chat", { 
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "meta-llama/llama-4-scout-17b-16e-instruct",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "Look at the image and give an estimate of how many calories it has."
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: base64Image
+                  }
+                }
+              ]
+            }
+          ],
+          temperature: 1,
+          max_completion_tokens: 900,
+          top_p: 1,
+          stream: false
+        }),
+      });
 
-    const data = await response.json()
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-    if (data.choices && data.choices.length > 0) {
-      const reply =
-        data.choices[0].message?.content ||
-        data.choices[0].text?.content ||
-        "Please ask a work related question."
-        console.log(reply)
-    } else {
-      console.error("Unexpected response format:", data)
+      const data = await response.json();
+
+      let reply;
+      if (data.choices && data.choices.length > 0) {
+        reply =
+          data.choices[0].message?.content ||
+          data.choices[0].text?.content ||
+          "No answer provided.";
+      } else if (data.messages && data.messages.length > 0) {
+        reply = data.messages[data.messages.length - 1].content;
+      } else {
+        reply = "Unexpected response format.";
+        console.error("Unexpected response format:", data);
+      }
+
+      console.log(reply);
+    } catch (err) {
+      console.error("Error during fetch:", err);
     }
-  } catch (err) {
-    console.error("Error during fetch:", err)
-  }
-}
+  };
 
-reader.readAsDataURL(file); 
+  reader.readAsDataURL(file); 
 }
