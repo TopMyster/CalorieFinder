@@ -62,7 +62,7 @@ async function submition() {
         reply = "Unexpected response format."
         console.error("Unexpected response format:", data)
       }
-
+      console.log(reply)
       document.getElementById('result').textContent = reply
     } catch (err) {
       console.error("Error during fetch:", err)
