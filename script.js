@@ -1,16 +1,16 @@
 async function submition() {
-  let fileInput = document.getElementById('userimage');
-  let file = fileInput.files[0];
+  let fileInput = document.getElementById('userimage')
+  let file = fileInput.files[0]
 
   if (!file) {
-    console.error("No file selected!");
-    return;
+    console.error("No file selected!")
+    return
   }
 
-  let reader = new FileReader();
+  let reader = new FileReader()
   reader.onload = async function(e) {
-    let base64Image = e.target.result;
-    console.log("Sending image:", base64Image);
+    let base64Image = e.target.result
+    console.log("Sending image:", base64Image)
 
     try {
       const response = await fetch("/api/chat", { 
@@ -42,32 +42,32 @@ async function submition() {
           top_p: 1,
           stream: false
         }),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const data = await response.json();
+      const data = await response.json()
 
-      let reply;
+      let reply
       if (data.choices && data.choices.length > 0) {
         reply =
           data.choices[0].message?.content ||
           data.choices[0].text?.content ||
-          "No answer provided.";
+          "No answer provided."
       } else if (data.messages && data.messages.length > 0) {
-        reply = data.messages[data.messages.length - 1].content;
+        reply = data.messages[data.messages.length - 1].content
       } else {
-        reply = "Unexpected response format.";
-        console.error("Unexpected response format:", data);
+        reply = "Unexpected response format."
+        console.error("Unexpected response format:", data)
       }
 
-      console.log(reply);
+      document.getElementById('result').textContent = reply
     } catch (err) {
-      console.error("Error during fetch:", err);
+      console.error("Error during fetch:", err)
     }
-  };
+  }
 
-  reader.readAsDataURL(file); 
+  reader.readAsDataURL(file)
 }
